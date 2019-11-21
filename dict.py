@@ -21,7 +21,10 @@ if number_of_inputs >= 1:
 		actions = ["defn", "syn", "ant", "ex"]
 		word = argv1
 else:
-	actions = ["wod"]
+	actions = ["defn", "syn", "ant", "ex"]
+	url = apihost + "/words/" + action_endpoints["wod"] + "?api_key=" + apikey
+	response = requests.get(url)
+	word = response.json()["word"]
 	
 #Implement respective API for given input
 if actions is not None:
@@ -29,11 +32,30 @@ if actions is not None:
 		if action in ["defn", "syn", "ant", "ex"]:
 			url = apihost + "/word/" + word + "/" + action_endpoints[action] + "?api_key=" + apikey
 			response = requests.get(url)
-			if action == "ex":
-				for text in response.json()["examples"]:
-					print(text['text'])
-		else:
-			url = apihost + "/words/" + action_endpoints[action] + "?api_key=" + apikey
+			if response.status_code == 200:
+				if action == "ex":
+					print("\n Examples for word ",word.capitalize(), "\n")
+					for text in response.json()["examples"]:
+						print(text['text'].capitalize())
+				elif action == "syn":
+					print("\n Synonyms for word ",word.capitalize(), "\n")
+					for related in response.json():
+						if related['relationshipType'] == 'synonym':
+							for wrd in related['words']:
+								print(wrd.capitalize())
+				elif action == "defn":
+					print("\n Definition of ",word.capitalize(), "\n")
+					for dfn in response.json():
+						print(dfn["text"].capitalize())
+				elif action == "ant":
+					print("\n Antonyms for word ",word.capitalize(), "\n")
+					for related in response.json():
+						if related['relationshipType'] == 'antonym':
+							for wrd in related['words']:
+								print(wrd.capitalize())
+			else:
+				print("Error connecting ", action_endpoints[action], " End point")
+			
 		
 		
 
