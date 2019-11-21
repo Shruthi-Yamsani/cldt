@@ -7,22 +7,35 @@ apikey = "b972c7ca44dda72a5b482052b1f5e13470e01477f3fb97c85d5313b3c1126270734811
 action_endpoints = {"defn" : "definitions", "ex" : "examples", "syn" : "relatedWords", "ant" : "relatedWords", "play" : "", "wod" : "randomWord"}
 
 #Read User input
-action = ""
-word = ""
+actions = None
+word = None
 number_of_inputs = len(sys.argv)-1
 if number_of_inputs >= 1:
 	argv1 = sys.argv[1]
 	if argv1 == "play":
-		action = [argv1]
+		actions = [argv1]
 	elif argv1 in action_endpoints:
-		action = [argv1]
+		actions = [argv1]
 		word = sys.argv[2]
 	else:
-		action = ["defn", "syn", "ant", "ex"]
+		actions = ["defn", "syn", "ant", "ex"]
 		word = argv1
 else:
-	action = "wod"
-print("action is, ",action)
-print("word is, ",word)
+	actions = ["wod"]
 	
 #Implement respective API for given input
+if actions is not None:
+	for action in actions:
+		if action in ["defn", "syn", "ant", "ex"]:
+			url = apihost + "/word/" + word + "/" + action_endpoints[action] + "?api_key=" + apikey
+			response = requests.get(url)
+			if action == "ex":
+				for text in response.json()["examples"]:
+					print(text['text'])
+		else:
+			url = apihost + "/words/" + action_endpoints[action] + "?api_key=" + apikey
+		
+		
+
+			
+		
