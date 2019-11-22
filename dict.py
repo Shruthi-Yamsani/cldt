@@ -24,9 +24,8 @@ if number_of_inputs >= 1:
 		word = argv1
 else:
 	actions = ["defn", "syn", "ant", "ex"]
-	url = apihost + "/words/" + action_endpoints["wod"] + "?api_key=" + apikey
-	response = requests.get(url)
-	word = response.json()["word"]
+    word = pickRandomWord()
+	
 	
 #Implement respective API for given input
 defn = []
@@ -59,7 +58,7 @@ if actions is not None:
 			else:
 				print("Error connecting ", action_endpoints[action], " End point")
         
-if !isPlay:
+if not isPlay:
     if not defn:
         print("\n Definition of ",word.capitalize(), "\n")
         for d = defn:
@@ -78,6 +77,54 @@ if !isPlay:
             print e
             
 else:
-    #Implement Play logic here
-    pass
+    number_trial = 1
+    play(defn, syn, ant, ex, number_trial)
+    
+def play(defn, syn, ant, ex, number_trial):
+    index = number_trial - 1
+    print("Guess the word based on below details")
+    print("The definition is:")
+    if defn:
+        if index < len(defn):
+            print defn[index]
+        else:
+            print defn[0]
+    if syn:
+        if index < len(syn):
+            print syn[index]
+        else:
+            print syn[0]
+    if ant:
+        if index < len(ant):
+            print ant[index]
+        else:
+            print ant[0]
+            
+    #Read User input as answer
+    answer = input("Enter your Answer")
+    #Validate user answer
+    if answer == word or :
+        print("Success")
+    else:
+        print("Wrong Answer")
+        print("Press 1 to Try Again")
+        print("Press 2 if you need a hint")
+        print("Press 3 to Quit")
+        choice = input()
+        if choice == 1:
+            play(defn, syn, ant, ex, number_trial+1)
+        elif choice == 2:
+            actions = ["defn", "syn", "ant", "ex"]
+            word = pickRandomWord()
+        else:
+            print("You are out now! Thanks for trying us")
+            
+            
+def pickRandomWord():
+    url = apihost + "/words/" + action_endpoints["wod"] + "?api_key=" + apikey
+	response = requests.get(url)
+	return response.json()["word"]
+        
+    
+    
         
