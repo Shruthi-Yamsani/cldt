@@ -9,11 +9,13 @@ action_endpoints = {"defn" : "definitions", "ex" : "examples", "syn" : "relatedW
 #Read User input
 actions = None
 word = None
+isPlay = False
 number_of_inputs = len(sys.argv)-1
 if number_of_inputs >= 1:
 	argv1 = sys.argv[1]
 	if argv1 == "play":
-		actions = [argv1]
+        isPlay = True
+		actions = ["defn", "syn", "ant", "ex"]
 	elif argv1 in action_endpoints:
 		actions = [argv1]
 		word = sys.argv[2]
@@ -27,6 +29,11 @@ else:
 	word = response.json()["word"]
 	
 #Implement respective API for given input
+defn = []
+ex = []
+syn = []
+ant = []
+
 if actions is not None:
 	for action in actions:
 		if action in ["defn", "syn", "ant", "ex"]:
@@ -34,30 +41,43 @@ if actions is not None:
 			response = requests.get(url)
 			if response.status_code == 200:
 				if action == "ex":
-					print("\n Examples for word ",word.capitalize(), "\n")
 					for text in response.json()["examples"]:
-						print(text['text'].capitalize())
+						ex.append(text['text'].capitalize())
 				elif action == "syn":
-					print("\n Synonyms for word ",word.capitalize(), "\n")
 					for related in response.json():
 						if related['relationshipType'] == 'synonym':
 							for wrd in related['words']:
-								print(wrd.capitalize())
+								syn.append(wrd.capitalize())
 				elif action == "defn":
-					print("\n Definition of ",word.capitalize(), "\n")
 					for dfn in response.json():
-						print(dfn["text"].capitalize())
+						defn.append(dfn["text"].capitalize())
 				elif action == "ant":
-					print("\n Antonyms for word ",word.capitalize(), "\n")
 					for related in response.json():
 						if related['relationshipType'] == 'antonym':
 							for wrd in related['words']:
-								print(wrd.capitalize())
+								ant.append(wrd.capitalize())
 			else:
 				print("Error connecting ", action_endpoints[action], " End point")
-			
-		
-		
-
-			
-		
+        
+if !isPlay:
+    if not defn:
+        print("\n Definition of ",word.capitalize(), "\n")
+        for d = defn:
+            print d
+    if not syn:
+        print("\n Synonyms for word ",word.capitalize(), "\n")
+        for s in syn:
+            print s
+    if not ant:
+        print("\n Antonyms for word ",word.capitalize(), "\n")
+        for a in ant:
+            print a
+    if not ex:
+        print("\n Examples for word ",word.capitalize(), "\n")
+        for e in ex:
+            print e
+            
+else:
+    #Implement Play logic here
+    pass
+        
